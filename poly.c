@@ -41,20 +41,26 @@ void get_polynom( int coeff[ ], int exp[ ] )
 	}
 }  /* end get_polynom */
 
-char * intToStrg(int input){
-	char temp[ASIZE];
-	int i;
-	for(i = 0;input > 0;i++){
-		temp[i] = input % 10;
-		input -= (input % 10);
-		input /= 10;
-	}
-	++i;
-	temp[i] = '\0';
-	return temp;
+char *intToStringh(char *dest, int i) {
+  if (i <= -10) {
+    dest = intToStringh(dest, i/10);
+  }
+  *dest++ = '0' - i%10;
+  return dest;
 }
 
-char * StrgM(char s1[], char s2[]){
+char *intToString(char *dest, int i) {
+  char *s = dest;
+  if (i < 0) {
+    *s++ = '-';
+  } else {
+    i = -i;
+  }
+  *intToStringh(s, i) = '\0';
+  return dest;
+}
+
+void StrgM(char s1[], char s2[]){
 	int i,flag;
 	for(i = 0; i < ASIZE;i++){
 			if(s1[i] == '\0'){
@@ -66,56 +72,96 @@ char * StrgM(char s1[], char s2[]){
 		if(s2[i] == '\0'){
 			s1[flag] = '\0';
 			break;
-		}else{
-			s1[flag] = s2[i];
 		}
+		s1[flag] = s2[i];
 	}
-	return s1;
 }
 /*
   Convert the polynomial to a string s.
  */
 void polynom_to_string( int coeff[ ], int exp[ ], char s[ ] )
 {
-
    int i, length = 0;
+   s[0] = 0;
+    if(coeff[i] == 0 && i == 0){
+		StrgM(s, "0");
+	}
    for(i=0;i < ASIZE; i++){
 		if(coeff[i] == 0){
-			break;
+			continue;
 		}
+		
+		char coef[ASIZE], expo[ASIZE];
+		intToString(coef, coeff[i]);
+		intToString(expo, exp[i]);
 		
 		if(exp[i] == 0){
 			if(i == 0){
-				length+=sprintf(s + length, "%d", coeff[i]);
+				StrgM(s, coef);
 			}else{
-				length+=sprintf(s + length, "%+d", coeff[i]);
+				if(coeff[i] > 0){
+					char temp[ASIZE] = "+";
+					StrgM(temp,coef);
+					StrgM(s, temp);
+				}else{
+					StrgM(s, coef);
+				}
 			}
 		}else if(exp[i] == 1){
 			if(i == 0){
-				if(coeff[i] == 1 || coeff[i] == -1){
-					length+=sprintf(s + length, "x");
+				if(coeff[i] == 1){
+					StrgM(s, "x");
+				}else if(coeff[i] == -1){
+					StrgM(s, "-x");
 				}else{
-					length+=sprintf(s + length, "%dx", coeff[i]);
+					StrgM(s, coef);
+					StrgM(s, "x");
 				}
 			}else{
-				if(coeff[i] == 1 || coeff[i] == -1){
-					length+=sprintf(s + length, "+x");
+				if(coeff[i] == 1){
+					StrgM(s, "+x");
+				}else if(coeff[i] == -1){
+					StrgM(s, "-x");
+				}else if(coeff[i] > 1){
+					char temp[ASIZE] = "+";
+					StrgM(temp,coef);
+					StrgM(s, temp);
+					StrgM(s, "x");
 				}else{
-					length+=sprintf(s + length, "%+dx", coeff[i]);
+					StrgM(s, coef);
+					StrgM(s, "x");
 				}
 			}
 		}else if(exp[i] > 1){
 			if(i == 0){
-				if(coeff[i] == 1 || coeff[i] == -1){
-					length+=sprintf(s + length, "x^%d", exp[i]);
+				if(coeff[i] == 1){
+					StrgM(s, "x^");
+					StrgM(s, expo);
+				}else if(coeff[i] == -1){
+					StrgM(s, "-x^");
+					StrgM(s, expo);
 				}else{
-					length+=sprintf(s + length, "%dx^%d", coeff[i],exp[i]);
+					StrgM(s, coef);
+					StrgM(s, "x^");
+					StrgM(s, expo);
 				}
 			}else{
-				if(coeff[i] == 1 || coeff[i] == -1){
-					length+=sprintf(s + length, "+x^%d", exp[i]);
+				if(coeff[i] == 1){
+					StrgM(s, "+x^");
+					StrgM(s, expo);
+				}else if(coeff[i] == -1){
+					StrgM(s, "-x^");
+					StrgM(s, expo);
+				}else if(coeff[i] > 1){
+					char temp[ASIZE] = "+";
+					StrgM(temp,coef);
+					StrgM(s, temp);
+					StrgM(s, "x^");
+					StrgM(s, expo);
 				}else{
-					length+=sprintf(s + length, "%+dx^%d", coeff[i],exp[i]);
+					StrgM(s, coef);
+					StrgM(s, "x^");
+					StrgM(s, expo);
 				}
 			}
 		}
@@ -159,7 +205,7 @@ void eval_polynom( int coeff[ ], int exp[ ], double x, double *result )
  */
 void add_polynom( int co1[ ], int ex1[ ], int co2[ ], int ex2[ ] )
 {
-	int i, end, swapped = 1,j=0, temp_ex,temp_co;
+	int i, end, j, temp_ex,temp_co;
 	for(i=0;i<ASIZE;i++){
 		if(co1[i] == 0){
 			end = i;
@@ -175,6 +221,19 @@ void add_polynom( int co1[ ], int ex1[ ], int co2[ ], int ex2[ ] )
 	
     for(i=0;i<end;i++){
 		for(j=i+1;j<end;j++){
+			
+			if(ex1[i] == ex1[j] && co1[i] != 0 && co1[j] != 0){
+				co1[i] = co1[i] + co1[j];
+				co1[j] = 0;
+				ex1[j] = 0;
+				if(co1[i] == 0){
+					ex1[i] = 0;
+				}
+				i=-1;
+				j=i+1;
+				continue;
+			}
+			
 			if(ex1[i] < ex1[j]){
 				temp_co = co1[i];
 				temp_ex = ex1[i];
@@ -184,18 +243,20 @@ void add_polynom( int co1[ ], int ex1[ ], int co2[ ], int ex2[ ] )
 				
 				ex1[j] = temp_ex;
 				co1[j] = temp_co;
-			} else if(ex1[i] == ex1[j]){
-				co1[i] = co1[i] + co1[j];
-				co1[j] = 0;
-				ex1[j] = 0;
-			}
+			} else if(ex1[i] == ex1[j] && ex1[i] == 0 && (co1[j] > 0 || co1[j] < 0 )){
+				temp_co = co1[i];
+				temp_ex = ex1[i];
+				
+				co1[i] = co1[j];
+				ex1[i] = ex1[j];
+				
+				ex1[j] = temp_ex;
+				co1[j] = temp_co;
+			} 
+			
+			
 		}
 	}
-	
-	for (i=0;i < end -1;i++) {
-		printf("%d\n",co1[i]);
-	}
-
 }  /* end add_ polynom */
 
 
