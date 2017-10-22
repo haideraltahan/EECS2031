@@ -41,6 +41,37 @@ void get_polynom( int coeff[ ], int exp[ ] )
 	}
 }  /* end get_polynom */
 
+char * intToStrg(int input){
+	char temp[ASIZE];
+	int i;
+	for(i = 0;input > 0;i++){
+		temp[i] = input % 10;
+		input -= (input % 10);
+		input /= 10;
+	}
+	++i;
+	temp[i] = '\0';
+	return temp;
+}
+
+char * StrgM(char s1[], char s2[]){
+	int i,flag;
+	for(i = 0; i < ASIZE;i++){
+			if(s1[i] == '\0'){
+				flag = i;
+				break;
+			}
+	}
+	for(i = 0; i < ASIZE;i++,flag++){
+		if(s2[i] == '\0'){
+			s1[flag] = '\0';
+			break;
+		}else{
+			s1[flag] = s2[i];
+		}
+	}
+	return s1;
+}
 /*
   Convert the polynomial to a string s.
  */
@@ -135,33 +166,35 @@ void add_polynom( int co1[ ], int ex1[ ], int co2[ ], int ex2[ ] )
 			break;}
 	}
 	
-	for(i=end-1;i<ASIZE;i++){
+	for(i=0;i<ASIZE;i++,end++){
 		if( co2[i] == 0){
-			end = i;
 			break;}
-		co1[i] = co2[i];
-		ex1[i] = ex2[i];
+		co1[end] = co2[i];
+		ex1[end] = ex2[i];
 	}
-    while (swapped) {
-        swapped = 0;
-        j++;
-        for (i = 0; i < end - j; i++) {
-			if( co1[i] == 0){break;}
-            if (ex1[i] < ex1[i + 1]) {
-				temp_ex = ex1[i + 1];
-				temp_co = co1[i + 1];
+	
+    for(i=0;i<end;i++){
+		for(j=i+1;j<end;j++){
+			if(ex1[i] < ex1[j]){
+				temp_co = co1[i];
+				temp_ex = ex1[i];
 				
-				ex1[i + 1] = ex1[i];
-				co1[i + 1] = co1[i];
+				co1[i] = co1[j];
+				ex1[i] = ex1[j];
 				
-				ex1[i] = temp_ex;
-				co1[i] = temp_co;
-                swapped = 1;
-            }else if(ex1[i] == ex1[i + 1]){
-				printf("equals");
+				ex1[j] = temp_ex;
+				co1[j] = temp_co;
+			} else if(ex1[i] == ex1[j]){
+				co1[i] = co1[i] + co1[j];
+				co1[j] = 0;
+				ex1[j] = 0;
 			}
-        }
-    }
+		}
+	}
+	
+	for (i=0;i < end -1;i++) {
+		printf("%d\n",co1[i]);
+	}
 
 }  /* end add_ polynom */
 
