@@ -1,0 +1,41 @@
+#!/bin/sh
+echo -n "Enter the file name: "
+read fileName
+
+[ -e "$fileName" ] || { echo "File '$fileName' does not exist."; exit 1; }
+[ -r "$fileName" ] || { echo "File '$fileName' is not readable."; exit 1; }
+
+a=($(wc $fileName))
+lineCount=${a[0]}
+wordCount=${a[1]}
+charCount=${a[2]}
+
+
+while :
+do
+
+echo -n "Count lines, words, characters or all three (l, m, c, a)? "
+read digit
+
+case $digit in
+	l|L)
+		echo "File '$fileName' contains $lineCount lines"
+		break
+		;;
+	m|M)
+		echo "File '$fileName' contains $wordCount words"
+		break
+		;;
+	c|C)
+		echo "File '$fileName' contains $charCount characters"
+		break
+		;;
+	a|A)
+		echo "File '$fileName' contains $lineCount lines, $wordCount words, and $charCount characters"
+		break
+		;;
+	*)
+		echo "Invalid option"
+		;;
+esac
+done

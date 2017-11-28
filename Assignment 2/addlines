@@ -1,0 +1,38 @@
+#!/bin/sh
+echo -n "Enter input file name: "
+read inputFile
+
+[ -e "$inputFile" ] || { echo "File '$inputFile' does not exist."; exit 1; }
+[ -r "$inputFile" ] || { echo "File '$inputFile' is not readable."; exit 1; }
+
+echo -n "Enter output file name: "
+read outputFile
+
+{ [ -e "$outputFile" ] && echo "File '$outputFile' exists."; } || { touch $outputFile; exit 1; }
+[ -w "$outputFile" ] || { echo "File '$outputFile' is not writable."; exit 1; }
+
+while :
+do
+
+echo -n "Append to it (y/n)? "
+read answer
+
+case $answer in
+        y|Y)
+		x=1
+            	cat $inputFile | while read line
+		do
+			echo "$x: $line" >> $outputFile
+			((x++))
+		done
+                exit 1
+                ;;
+        n|N)
+            	exit 1
+                ;;
+        *)
+          	echo "Invalid option"
+                ;;
+esac
+done
+

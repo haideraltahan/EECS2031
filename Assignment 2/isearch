@@ -1,0 +1,39 @@
+#!/bin/sh
+echo -n "Enter the file name: "
+read fileName
+
+[ -e "$fileName" ] || { echo "File '$fileName' does not exist."; exit 1; }
+[ -r "$fileName" ] || { echo "File '$fileName' is not readable."; exit 1; }
+
+echo -n "Enter the word to search for: "
+read word
+
+
+while :
+do
+
+echo -n "Case-sensitive? "
+read answer
+
+case $answer in
+	n|N)
+		grep -i $word $fileName
+		check=$?
+		break
+		;;
+	y|Y)
+		grep $word $fileName
+		check=$?
+		break
+		;;
+	*)
+		echo "Invalid option"
+		;;
+esac
+done
+
+if [ $check = 1 ];then
+	echo "Word '$word' not found."
+fi
+
+

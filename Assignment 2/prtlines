@@ -1,0 +1,49 @@
+#!/bin/sh
+echo -n "Enter input file name: "
+read fileName
+
+[ -e "$fileName" ] || { echo "File '$fileName' does not exist."; exit 1; }
+[ -r "$fileName" ] || { echo "File '$fileName' is not readable."; exit 1; }
+
+lineCount=($(wc -l $fileName))
+echo "File '$fileName' has $lineCount lines."
+
+while :
+do
+
+echo -n "From line: "
+read from
+
+if [ $from -le 0 ] || [ $from -ge $lineCount ]; then
+	echo "Invalid line number"
+else
+	break
+fi	
+
+done
+
+
+while :
+do
+
+echo -n "To line: "
+read to
+
+if [ $to -le $from ] || [ $to -gt $lineCount ]; then
+        echo "Invalid line number"
+else
+        break
+fi
+
+done
+
+
+x=1
+cat $fileName | while read line        
+do
+	if test $x -ge $from && test $x -le $to
+	then
+     		echo "$x: $line"
+	fi
+	((x++))
+done

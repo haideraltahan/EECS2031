@@ -1,0 +1,61 @@
+#!/bin/sh
+menu()
+{
+	echo "========== MENU =========="
+	echo "s: Search for a word"
+	echo "c: Count lines, words, characters"
+	echo "f: List all ordinary files in current directory"
+	echo "v: View content of file"
+	echo "d: Double spacing"
+	echo "a: Add line numbers"
+	echo "l: Display specified lines in file"
+	echo "h: Help / Display this menu"
+	echo "r: Clear the screen"
+	echo "q: Quit the program"
+	echo "=========================="
+	echo " "
+}
+menu
+
+while :
+do
+
+echo -n "Enter command: "
+read command
+
+case $command in
+	s|S)
+		isearch
+		;;
+	c|C)
+		icount
+		;;
+	f|F)
+		allfiles
+		;;
+	v|V)
+		fdisplay
+		;;
+	d|D)
+		doublesp
+		;;
+	a|A)
+		addlines
+		;;
+	l|L)
+		prtlines
+		;;
+	h|H)
+		menu
+		;;
+	r|R)
+		clear
+		;;
+	q|Q)
+		break
+		;;
+	*)
+		echo "Invalid command"
+		;;
+esac
+done

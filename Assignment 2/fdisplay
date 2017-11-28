@@ -1,0 +1,35 @@
+#!/bin/sh
+echo -n "Enter the file name: "
+read fileName
+
+[ -e "$fileName" ] || { echo "File '$fileName' does not exist."; exit 1; }
+[ -r "$fileName" ] || { echo "File '$fileName' is not readable."; exit 1; }
+
+while :
+do
+
+echo -n "Enter option (e, p, f, l): "
+read option
+
+case $option in
+	e|E)
+            	cat $fileName
+		break
+		;;
+        p|P)
+            	less $fileName
+                break
+		;;
+        f|F)
+            	head -10 $fileName
+                break
+		;;
+        l|L)	
+		tail -10 $fileName          	
+                break
+		;;
+        *)
+          	echo "Invalid option"
+                ;;
+esac
+done
